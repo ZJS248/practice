@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://localhost\website\css\bootstrap.min.css">
+    <script src="http://localhost\website\React-Redux/react.development.js"></script>
+    <script src="http://localhost\website\React-Redux\react-dom.development.js"></script>
+    <script src="http://localhost\website\React-Redux\bable.min.js"></script>
+    <script src="http://localhost\website\css\jquery-3.4.1.slim.min.js"></script>
+    <script src="https://www.recaptcha.net/recaptcha/api.js" async defer></script>
+    <script src="./ajax.js"></script>
+    <script src="http://localhost/website/web-html/ajax.js"></script>
+    <title>Document</title>
+</head>
+<style>
+    html{
+        overflow: scroll;
+        overflow-x: hidden;
+        min-width: 1210px;
+        display: block;
+        background: #fdfcf8;
+    }
+    body{
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: #fdfcf8;
+    }
+    #head{
+        margin: 0 auto;
+        padding: 0;
+        border: 0;
+        background-color: rgb(0,0,0,0.2);
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        background-position-x: center;
+        width: 1239px;
+    }
+    .nav-div{
+        overflow: hidden;
+        word-break: keep-all;
+        width: 1210px;
+        height: 100px;
+        margin: 0 0 0 12px;
+    }
+    .web-logo{
+        height: 100px;
+        position: absolute;
+        display: block;
+        font-size: 40px;
+        font-family: monospace;
+        display: flex;
+        align-items: center;
+    }
+    .web-link{
+        font-size: 40px;
+        font-family: monospace;
+    }
+    #login{
+        margin: auto;
+        margin-top: 100px;
+        width: 800px;
+        height: 500px;
+        border: 1px solid black;
+        border-radius: 10%;
+        padding: 30px;
+        position: relative;
+    }
+    .nav-btn{
+        width: 400px;
+        float: right;
+        display: flex;
+        justify-content: space-around;
+    }
+    .input-label{
+        margin-top: 20px;
+    }
+    .info-border{
+        width: 50%;
+        height: 400px;
+        float: left;
+        display: flex;
+        justify-content: center;
+        position: relative;
+    }
+    .info-border>div{
+        width:95% ;
+        height: 95%;
+        margin: 5px;
+        border: coral 2px outset;
+        word-break: break-all;
+        font-size: 20px;
+        overflow-y: auto;
+    }
+    .function-border{
+        height: 400px;
+        width: 50%;
+        float: right;
+        position: relative;
+    }
+    .input-area{
+        height:82% ;
+    }
+    .user-check{
+        margin: 10px 10px 0px 10px;
+        position: relative;
+        height: 10%;
+        width: 100%;
+        word-break: keep-all;
+    }
+    .alert-size{
+        font-size: 18px;
+        min-height: 30px;
+        max-height: 60px;
+        overflow: hidden;
+    }
+    .google-test{
+        padding: 20px 0;;
+        max-height:120px;
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .input-radios{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+</style>
+<body>
+    <main>
+        <div id="head"></div>   
+        <div id="login" class="">
+            <div class="nav nav-tabs nav-btn">
+                <li class="nav-item">
+                    <button id="loginbtn" onclick="loginbtn()" class="nav-link">登录</button>
+                </li>
+                <li class="nav-item">
+                    <button id="registbtn" onclick="registbtn()" class="nav-link">注册</button>
+                </li>                
+            </div>
+            <div id="Interface" ></div>
+        </div>   
+    </main>
+</body>
+<script type="text/babel">
+        const userCheck=/(?!_)^[\u4e00-\u9fa5_a-zA-Z0-9_]{2,30}$/; 
+        const pwdCheck=/^\w*(?=\w{8,}\w*$)/; 
+        window.onload=()=>{
+            LoadClass(Presentational,"head");
+            loginbtn();//加载React模块
+        }
+        class Presentational extends React.Component{
+        constructor(props){
+            super(props)
+        }
+        render(){
+            return(
+                <div className="nav-div">
+                    <div className="web-logo"><a href="#" className="web-link text-decoration-none">我的主页</a></div>               
+                </div>
+            )
+        }
+    }
+    
+    class LoginMenu extends React.Component{
+        constructor(props){
+            super(props);
+            this.state={
+                widgetId:"",
+            }
+        }
+        AlertInfo(event){
+            let value=event.target.value;
+            if(value.length>=30){
+                this.refs["alertinfo"].hidden=false;
+                this.refs["alertinfo"].innerHTML="已经达到最大长度"
+            }else{
+                this.refs["alertinfo"].hidden=true;
+            }
+        }
+        UserLogin(){
+            const user=this.refs["username"].value;
+            const pwd=this.refs["password"].value;
+            const info=this.refs["alertinfo"];
+            if(user==""||pwd==""){
+                info.innerHTML="输入框不能为空";
+                info.hidden=false;
+                return;
+            }
+            if(!userCheck.test(user)){
+                info.innerHTML="用户名格式错误";
+                info.hidden=false;
+                return;
+            }else if(!pwdCheck.test(pwd)){
+                info.innerHTML="密码格式错误";
+                info.hidden=false;
+                return;
+            }else{
+                var responseToken = grecaptcha.getResponse(this.state.widgetId);    //谷歌人机验证(已取消)
+                console.log(responseToken);
+                responseToken="0";//
+                if(responseToken!=""){
+                    ajaxFun({
+                        method:"POST",
+                        url:"http://localhost/website/web-php/login-regist.php",
+                        data:{
+                            state:'login',
+                            username:user,
+                            password:pwd,
+                        },
+                        sucess:(data)=>{
+                            if(data==""){
+                                info.innerHTML="登陆失败，请检查用户名或者密码";
+                                info.hidden=false;
+                            }else{
+                                info.innerHTML="登陆成功！即将跳转...";
+                                info.hidden=false;
+                                setTimeout(function(){
+                                    const userid=data.substring(0,data.indexOf("&pd"));
+                                    //encodeURI //中文替换为字符
+                                    //decodeURI //字符还原成中文
+                                    document.cookie=`userid=${userid};path=`+`/website`;
+                                    /*
+                                    expires:设置过期时间
+                                    path:设置访问路径
+                                    domain:限制访问域名
+                                    */
+                                    window.open("http://localhost/website/index.html?id="+data+"","_self");
+                                },500);
+                            }
+                        },
+                        error:(data)=>{
+                            info.innerHTML="acess failed";
+                            info.hidden=false;
+                        }
+                    })                    
+                }else{
+                    info.innerHTML="验证失败";
+                    info.hidden=false;
+                }
+
+            }
+        }
+        componentDidMount(){
+            const info=this.refs["alertinfo"];
+            var callback = function (args) {
+                console.log(args)
+                info.innerHTML="验证成功";
+                info.hidden=false;
+            };
+            var expiredCallback = function (args) {
+                console.log(args)
+                info.innerHTML="验证过期";
+                info.hidden=false;
+            };
+            var errorCallback = function (args) {
+                console.log(args)
+                info.innerHTML="验证失败";
+                info.hidden=false;
+            };
+            this.setState({
+                widgetId : grecaptcha.render('robot', {
+                'sitekey': '6Lfq1fAUAAAAAJi6hS1SNRHXdi39FBdRQw35kzMm', //私钥:6Lfq1fAUAAAAAN3HrRjb4k5D6Cj-Z-4tMMQSCIxM;
+                'theme': 'light',   //  验证码组件主题色，默认light，还有一个dark可选
+                'size': 'normal',  //  验证码尺寸规则，默认normal也就是长方形，可选值compact正方形
+                'callback': "", //验证成功回调，比如用户点击了我不是机器人复选框，弹出了图片，用户在选择完图片点击右下角的验证，如果验证成功便会触发此回调
+                //验证成功后输出验证成功以及一大段乱码字符，这段字符官方称为 response token
+                'expired-callback': expiredCallback, //过期回调，如果用户第一次验证成功后页面放置一段时间，当前验证就会过期，一旦过期谷歌会自动调用过期回调
+                'error-callback': errorCallback //错误回调，验证过程中如果出现错误便会执行这个回调
+                })             
+            });
+            // console.clear();
+        }
+        render(){
+            return(
+                <div>
+                    <div className="info-border"><div>Welcome</div></div>
+                    <div className="function-border">
+                        <div className="input-area">
+                        <div className="input-group-prepend input-label">
+                            <span className="input-group-text text-center" style={{width:"100px"}}>用户名</span>
+                            <input className="form-control" type="text" ref="username" placeholder="Username" onFocus={this.AlertInfo.bind(this)} aria-label="Username" maxLength="30"/>
+                        </div>
+                        <div className="input-group-prepend input-label">
+                            <span className="input-group-text text-center" style={{width:"100px"}}>密码</span>
+                            <input className="form-control" type="password" ref="password" placeholder="password" onFocus={this.AlertInfo.bind(this)} aria-label="Password"  maxLength="30" />
+                        </div>
+                        <div className="user-check">
+                            <div className="form-check form-check-inline" style={{float:"left"}}>
+                                <input className="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1"/>
+                                <label className="form-check-label" htmlFor="inlineCheckbox1">记住密码</label>                            
+                            </div>
+                            <div className="form-check form-check-inline" style={{float:"right"}}>
+                                <input className="form-check-input" type="checkbox" id="inlineCheckbox2" value="option1"/>
+                                <label className="form-check-label" htmlFor="inlineCheckbox2">自动登录</label>                            
+                            </div>
+                        </div>
+                        <div className="alert-size alert-info text-center" ref="alertinfo" hidden></div>    
+                        <div className="google-test">
+                            <div id="robot"></div>
+                        </div>                                                  
+                        </div>
+                        <button className="btn btn-block btn-primary" onClick={this.UserLogin.bind(this)}>登录</button>
+                    </div>
+                        
+                  
+                </div>
+            )
+        }        
+    }
+    class RegistMenu extends React.Component{
+        constructor(props){
+            super(props);
+            this.state={
+                sex:"保密"
+            }
+        }
+        SexSelect(event){
+            this.setState({
+                sex:event.target.value,
+            })
+        }
+        AlertInfo(event){
+            let value=event.target.value;
+            if(value.length>=30){
+                this.refs["alertinfo"].hidden=false;
+                this.refs["alertinfo"].innerHTML="已经达到最大长度";
+            }else{
+                this.refs["alertinfo"].hidden=true;
+            }
+        }
+        UserRegist(){
+            let user=this.refs["user"].value;
+            let pwd=this.refs["pwd"].value;
+            let repwd=this.refs["repwd"].value;
+            const info=this.refs["alertinfo"];
+            if(user==""||pwd==""||repwd==""){
+                info.innerHTML="输入框不能为空";
+                info.hidden=false;
+                return;
+            }
+            if(!userCheck.test(user)){
+                info.innerHTML="用户名只能使用数字字母下划线,必须大于两个字符,且不能以下划线开头";
+                info.hidden=false;
+                return;
+            }else if(!pwdCheck.test(pwd)){
+                info.innerHTML="密码格式错误,密码仅支持字母数字下划线,且长度必须大于或等于8";
+                info.hidden=false;
+                return;
+            }else if(pwd!==repwd){
+                info.innerHTML="两次输入的密码不相同";
+                info.hidden=false;
+                return;
+            }else{
+                ajaxFun({
+                    method:"POST",
+                    url:"http://localhost/website/web-php/login-regist.php",
+                    data:{
+                        state:'regist',
+                        username:user,
+                        password:pwd,
+                        sex:this.state.sex,
+                        date:(new Date()).toLocaleDateString()
+                    },
+                    sucess:(data)=>{
+                        console.log(data);
+                        if(data.indexOf("exist")>-1){
+                            info.innerHTML="注册失败,用户名已存在！";
+                            info.hidden=false;
+                        }else{
+                            info.innerHTML="注册成功,即将跳转...";
+                            info.hidden=false;
+                            console.log(data);
+                            setTimeout(()=>{
+                                const userid=data.substring(0,data.indexOf("&pd"));
+                                document.cookie=`userid=${userid};path=`+`/website`;
+                                window.open("http://localhost/website/index.html?id="+data+"","_self")
+                            },500);
+                        }
+                    },
+                    error:(data)=>{
+                        info.innerHTML="acess failed";
+                        info.hidden=false;
+                    }
+                })
+            }
+        }
+        render(){
+            return(
+                <div>
+                    <div className="info-border"><div>Welcome</div></div>
+                    <div className="function-border">
+                        <div className="input-area">
+                        <div className="input-group-prepend input-label">
+                            <span className="input-group-text" style={{width:"100px"}}>用户名</span>
+                            <input className="form-control" ref="user" type="text" placeholder="Username" aria-label="Username" onFocus={this.AlertInfo.bind(this)}  maxLength="30"/>
+                        </div>
+                        <div className="input-group-prepend input-label">
+                            <span className="input-group-text" style={{width:"100px"}}>密码</span>
+                            <input className="form-control" ref="pwd"  placeholder="password" aria-label="Password"type="password" onFocus={this.AlertInfo.bind(this)}  maxLength="30"/>
+                        </div>
+                        <div className="input-group-prepend input-label">
+                            <span className="input-group-text" style={{width:"200px"}}>请再次输入密码</span>
+                            <input className="form-control" ref="repwd" placeholder="password" aria-label="Password"type="password" onFocus={this.AlertInfo.bind(this)}  maxLength="30"/>
+                        </div>
+                        <div className="input-radios">
+                            <label><input type="radio" value="男" name="sex" onClick={this.SexSelect.bind(this)}/>男</label>
+                            <label><input type="radio" value="女" name="sex" onClick={this.SexSelect.bind(this)}/>女</label>
+                            <label><input type="radio" value="保密" name="sex" onClick={this.SexSelect.bind(this)} defaultChecked={true}/>保密</label>
+                        </div>
+                        <div className="alert-size alert-info text-center" ref="alertinfo" hidden></div>      
+                        <div className="google-test"></div>                 
+                        </div>
+                        
+                        <button className="btn btn-block btn-primary" onClick={this.UserRegist.bind(this)}>注册</button>
+                    </div>
+                </div>
+            )
+        }  
+    }
+    function LoadClass(ClassTitle,id){
+        ReactDOM.render(
+            <ClassTitle/>,
+            document.getElementById(id)
+        );
+    }
+    function loginbtn(){
+        LoadClass(LoginMenu,'Interface');
+        $("#loginbtn").addClass("active");
+        $("#registbtn").removeClass("active");
+    }
+    function registbtn(){
+        LoadClass(RegistMenu,'Interface');
+        $("#loginbtn").removeClass("active");
+        $("#registbtn").addClass("active");
+    }
+</script>
+</html>
